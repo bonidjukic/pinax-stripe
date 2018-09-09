@@ -13,12 +13,14 @@ from django.utils.translation import ugettext_lazy as _
 import stripe
 from jsonfield.fields import JSONField
 
+from base62_uuid.models import Base62UUIDMixin
+
 from .conf import settings
 from .managers import ChargeManager, CustomerManager
 from .utils import CURRENCY_SYMBOLS
 
 
-class StripeObject(models.Model):
+class StripeObject(Base62UUIDMixin):
 
     stripe_id = models.CharField(max_length=191, unique=True)
     created_at = models.DateTimeField(default=timezone.now)
@@ -53,7 +55,7 @@ class AccountRelatedStripeObject(AccountRelatedStripeObjectMixin, StripeObject):
         abstract = True
 
 
-class UniquePerAccountStripeObject(AccountRelatedStripeObjectMixin):
+class UniquePerAccountStripeObject(AccountRelatedStripeObjectMixin, Base62UUIDMixin):
     stripe_id = models.CharField(max_length=191)
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -133,7 +135,7 @@ class Coupon(StripeObject):
 
 
 @python_2_unicode_compatible
-class EventProcessingException(models.Model):
+class EventProcessingException(Base62UUIDMixin):
 
     event = models.ForeignKey("Event", null=True, blank=True, on_delete=models.CASCADE)
     data = models.TextField()
@@ -215,7 +217,7 @@ class Transfer(AccountRelatedStripeObject):
         )
 
 
-class TransferChargeFee(models.Model):
+class TransferChargeFee(Base62UUIDMixin):
 
     transfer = models.ForeignKey(Transfer, related_name="charge_fee_details", on_delete=models.CASCADE)
     amount = models.DecimalField(decimal_places=2, max_digits=9)
@@ -226,7 +228,7 @@ class TransferChargeFee(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
 
-class UserAccount(models.Model):
+class UserAccount(Base62UUIDMixin):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              related_name="user_accounts",
                              related_query_name="user_account",
@@ -443,7 +445,7 @@ class Invoice(StripeAccountFromCustomerMixin, StripeObject):
         )
 
 
-class InvoiceItem(models.Model):
+class InvoiceItem(Base62UUIDMixin):
 
     stripe_id = models.CharField(max_length=255)
     created_at = models.DateTimeField(default=timezone.now)

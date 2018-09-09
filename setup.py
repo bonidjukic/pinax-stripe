@@ -92,11 +92,15 @@ setup(
         "django>=1.8",
         "pytz",
         "six",
-        "django-ipware==2.1.0"
+        "django-ipware==2.1.0",
+        "base62_uuid==0.1",
     ],
     extras_require={
         "pytest": ["pytest", "pytest-django"] + tests_require,
     },
+    dependency_links=[
+        "git+https://git@github.com/bonidjukic/base62-uuid.git#egg=base62_uuid-0.1" # noqa
+    ],
     test_suite="runtests.runtests",
     tests_require=tests_require,
     zip_safe=False,

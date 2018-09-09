@@ -131,7 +131,10 @@ def sync_invoices_for_customer(customer):
     Args:
         customer: the customer for whom to synchronize all invoices
     """
-    for invoice in customer.stripe_customer.invoices().data:
+    invoices = stripe.Invoice.list(
+        settings.PINAX_STRIPE_SECRET_KEY,
+        customer=customer.stripe_customer.stripe_id)
+    for invoice in invoices.data:
         sync_invoice_from_stripe_data(invoice, send_receipt=False)
 
 
